@@ -1,0 +1,107 @@
+<html>
+
+    <head>
+        <title> Chat with username </title>
+        <script>
+            var name = prompt("Enter your name please");
+        </script>
+
+        <style>
+            *{
+                margin: 5px;
+                padding: 0px;
+            }
+
+            body{
+                font-size: 20px;
+            }
+
+            #form{
+                background-color: #333;
+                padding: 5px;
+                position: fixed;
+                bottom: 5px;
+                width: 100%;
+            }
+
+            #form input
+            {
+                width: 90%;
+                background-color: aquamarine;
+                padding: 10px;
+            }
+
+            #form button
+            {
+                width: 5%;
+                background-color: green;
+                padding: 10px;
+                color: #fff;
+            }
+
+            #message{
+                list-style-type: none;
+            }
+
+            #messages li
+            {
+                padding: 5px 10px;
+                width: 100%;
+            }
+
+            #list
+            {
+                text-align: right;
+                background-color: khaki;
+                
+            }
+
+        </style>
+
+
+    </head>
+
+    <body>
+
+        <ul id="messages"></ul>
+
+        <form id="form">
+            <input id="input">
+            <button>Send</button>
+        </form>
+
+    </body>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <script>
+        var socket = io();
+        socket.emit('joining msg', name);
+
+        //sending the message
+        $('#form').submit(function (e){
+            e.preventDefault;
+            //reading the message type in input
+            var message = $('#input').val();
+            //sending it to the socket emit by appending the name to the message
+            socket.emit("chat message", (name + " :: " + message));
+            //append the my own message to the ul as you tag
+            $('#messages').append($('<li id="list">').text('You : ' + message));
+            //making the input box empty
+            $('#input').val("");
+            return false; //important
+        })
+
+        //getting the message
+        socket.on('chat message', function(msg){
+            $('#messages').append($('<li>').text(msg));
+        });
+
+        socket.on('joing ui message', function(msg){
+            $('#messages').append($('<li class="join-message">').text(msg));
+        });
+
+    </script>
+
+</html>
